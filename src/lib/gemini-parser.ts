@@ -52,7 +52,7 @@ export async function parseApolloData(req: GeminiParseRequest): Promise<GeminiPa
   }
 
   const genAI = new GoogleGenerativeAI(apiKey)
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+  const model = genAI.getGenerativeModel({ model: 'gemini-3.1-flash-lite' })
 
   // ── Build the structured prompt ──────────────────────────────────────────
   // rawApolloText is passed as DATA (not instruction) to prevent prompt injection
