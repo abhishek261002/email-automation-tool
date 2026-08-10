@@ -1,0 +1,19 @@
+PASS src/lib/__tests__/email-utils.test.ts
+  buildPrimaryEmail
+    √ returns firstName@domain for a simple name and domain (8 ms)
+    √ lowercases mixed-case first names (2 ms)
+    √ trims leading and trailing whitespace from firstName (1 ms)
+    √ trims leading and trailing whitespace from domain (1 ms)
+    √ accepts any valid name string (2 ms)
+  buildFallbackEmail
+    √ returns firstName.lastName@domain for simple names and domain (1 ms)
+    √ lowercases mixed-case first and last names (1 ms)
+    √ trims leading and trailing whitespace from all parameters (1 ms)
+    √ accepts any valid name string for both first and last name (2 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       9 passed, 9 total
+Snapshots:   0 total
+Time:        5.615 s
+Ran all test suites matching /src\\lib\\__tests__\\email-utils.test.ts|;|Get-Content|test-output.txt/i.
+Force exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?
