@@ -16,11 +16,11 @@ export async function GET(_request: NextRequest) {
     const supabase = getSupabaseAdmin()
     const { data, error } = await supabase
       .from('email_templates')
-      .select('id, name, subject_template, variables, created_at')
-      .order('created_at', { ascending: true })
+      .select('id, name, subject_template, variables')
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      console.error('[GET /api/templates] Supabase query error:', error)
+      return NextResponse.json({ error: error.message, details: error }, { status: 500 })
     }
 
     const templates = (data ?? []).map((row: Record<string, unknown>) => ({

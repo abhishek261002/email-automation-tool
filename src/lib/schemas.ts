@@ -32,11 +32,11 @@ export type CampaignFormInput = z.infer<typeof CampaignFormInputSchema>
  */
 export const ParsedLeadSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
-  lastName: z.string().min(1, 'Last name is required'),
-  role: z.string().min(1, 'Role is required'),
-  primaryEmail: z.string().email('Primary email must be a valid email address'),
-  fallbackEmail: z.string().email('Fallback email must be a valid email address'),
-  isVerified: z.boolean(),
+  lastName: z.string().default(''),
+  role: z.string().default(''),
+  primaryEmail: z.string().optional().default(''),
+  fallbackEmail: z.string().optional().default(''),
+  isVerified: z.boolean().default(false),
   selected: z.boolean().optional().default(true),
 })
 

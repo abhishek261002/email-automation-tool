@@ -38,6 +38,7 @@ export default function NewCampaignPage() {
   const [apiError, setApiError] = useState<string | null>(null)
 
   // ── Load templates and resumes ──────────────────────────────────────────────
+  // ── Load templates and resumes ──────────────────────────────────────────────
   useEffect(() => {
     const load = async () => {
       try {
@@ -47,16 +48,20 @@ export default function NewCampaignPage() {
         ])
         if (tRes.ok) {
           const tj = await tRes.json()
-          setTemplates(tj.templates ?? [])
-          if (tj.templates?.length > 0) setTemplateId(tj.templates[0].id)
+          const list = tj.templates ?? tj ?? []
+          setTemplates(Array.isArray(list) ? list : [])
+          if (Array.isArray(list) && list.length > 0) setTemplateId(list[0].id)
+        } else {
+          const errBody = await tRes.json().catch(() => ({}))
+          console.error('[Templates Fetch Failed]', tRes.status, errBody)
         }
         if (rRes.ok) {
           const rj = await rRes.json()
           setResumes(rj.resumes ?? [])
           if (rj.resumes?.length > 0) setResumeId(rj.resumes[0].id)
         }
-      } catch {
-        // Non-fatal — user can still select from dropdowns
+      } catch (err) {
+        console.error('[Load Error]', err)
       }
     }
     load()

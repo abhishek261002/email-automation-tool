@@ -116,10 +116,12 @@ ${req.rawApolloText}`
   }
 
   // ── Validate schema ───────────────────────────────────────────────────────
+  // ── Validate schema ───────────────────────────────────────────────────────
   const schemaResult = GeminiParseResponseSchema.safeParse(parsed)
   if (!schemaResult.success) {
+    console.error('Schema Error Details:', schemaResult.error.format())
     throw new ParseError(
-      `Gemini response failed schema validation: ${schemaResult.error.message}`,
+      `Gemini response failed schema validation: ${JSON.stringify(schemaResult.error.issues)}`,
       cleaned
     )
   }
