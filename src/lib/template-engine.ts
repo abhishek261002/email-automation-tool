@@ -130,20 +130,20 @@ export function validateTemplateDeclarations(template: EmailTemplate): void {
     const declaredVariables = new Set(variables)
 
     // Check 1 (Req 5.3): every declared variable must appear in the templates
-    for (const declared of declaredVariables) {
-      if (!usedTokens.has(declared)) {
-        throw new TemplateDeclarationError(
-          `Declared variable "${declared}" does not appear in subjectTemplate or bodyTemplate`
-        )
-      }
+  Array.from(declaredVariables).forEach((declared) => {
+    if (!usedTokens.has(declared)) {
+      throw new TemplateDeclarationError(
+        `Declared variable "${declared}" does not appear in subjectTemplate or bodyTemplate`
+      )
     }
+  })
 
-    // Check 2 (Req 5.4): every token in the templates must be declared
-    for (const used of usedTokens) {
-      if (!declaredVariables.has(used)) {
-        throw new TemplateDeclarationError(
-          `Token "{${used}}" found in template text but is not declared in the variables array`
-        )
-      }
+  // Check 2 (Req 5.4): every token in the templates must be declared
+  Array.from(usedTokens).forEach((used) => {
+    if (!declaredVariables.has(used)) {
+      throw new TemplateDeclarationError(
+        `Token "{${used}}" found in template text but is not declared in the variables array`
+      )
     }
+  })
   }
