@@ -80,6 +80,14 @@ function createOAuth2Client() {
  *
  * Requirements: 8.4
  */
+// ─── sendEmail ────────────────────────────────────────────────────────────────
+
+/**
+ * Sends an email via Gmail using OAuth2 + nodemailer.
+ * Preserves paragraph spacing, line breaks, and converts URLs to clickable links.
+ *
+ * Requirements: 8.4
+ */
 export async function sendEmail(options: SendEmailOptions): Promise<void> {
   const { senderAddress } = getGmailCredentials()
   const oauth2Client = createOAuth2Client()
@@ -111,12 +119,29 @@ export async function sendEmail(options: SendEmailOptions): Promise<void> {
       : Buffer.from(att.content as ArrayBuffer),
   }))
 
+  // Convert URLs in text into clickable HTML anchor tags
+  const autoLink = (str: string) =>
+    str.replace(
+      /(https?:\/\/[^\s<]+)/g,
+      '<a href="$1" target="_blank" style="color: #2563eb; text-decoration: underline;">$1</a>'
+    )
+
+  // Transform raw text into well-formatted HTML with clean paragraph gaps
+  const formattedHtml = options.body
+    .replace(/\r\n/g, '\n')
+    .split('\n\n')
+    .map((paragraph) => {
+      const cleanParagraph = autoLink(paragraph.trim()).replace(/\n/g, '<br/>')
+      return `<p style="margin: 0 0 16px 0; line-height: 1.6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 15px; color: #1f2937;">${cleanParagraph}</p>`
+    })
+    .join('')
+
   await transporter.sendMail({
     from: senderAddress,
     to: options.to,
     subject: options.subject,
-    text: options.body,
-    html: options.body,
+    text: options.body, // Fallback plain text version
+    html: `<div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff;">${formattedHtml}</div>`,
     attachments,
   })
 }
