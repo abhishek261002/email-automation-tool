@@ -22,7 +22,7 @@ function getSupabaseAdmin() {
  *
  * Requirements: 10.1
  */
-export async function GET(_request: NextRequest) {
+export async function GET() {
   try {
     const supabase = getSupabaseAdmin()
 

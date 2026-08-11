@@ -36,7 +36,7 @@ function hasPdfMagicBytes(buffer: Buffer): boolean {
  * Returns all uploaded resumes ordered by upload date (newest first).
  * Requirements: 4.4
  */
-export async function GET(_request: NextRequest) {
+export async function GET() {
   try {
     const supabase = getSupabaseAdmin()
 

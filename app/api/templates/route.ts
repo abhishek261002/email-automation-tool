@@ -11,7 +11,7 @@ function getSupabaseAdmin() {
 /**
  * GET /api/templates — list all email templates
  */
-export async function GET(_request: NextRequest) {
+export async function GET() {
   try {
     const supabase = getSupabaseAdmin()
     const { data, error } = await supabase
