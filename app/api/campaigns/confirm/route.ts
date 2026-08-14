@@ -6,10 +6,14 @@ import { CampaignFormInputSchema, ParsedLeadSchema } from '@/lib/schemas'
 // ─── Supabase admin client ────────────────────────────────────────────────────
 
 function getSupabaseAdmin() {
-  const url = process.env.SUPABASE_URL
-  const key = process.env.SUPABASE_SERVICE_KEY
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
+  const key =
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.SUPABASE_SERVICE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
   if (!url || !key) {
-    throw new Error('Missing SUPABASE_URL or SUPABASE_SERVICE_KEY')
+    throw new Error('Missing Supabase environment variables (URL or SERVICE_KEY)')
   }
   return createClient(url, key)
 }
@@ -68,10 +72,10 @@ export async function POST(request: NextRequest) {
       .select('*')
       .single()
 
-    if (campaignError) {
+    if (campaignError || !campaignRow) {
       console.error('[POST /api/campaigns/confirm] Campaign insert error:', campaignError)
       return NextResponse.json(
-        { error: 'Failed to create campaign', detail: campaignError.message },
+        { error: 'Failed to create campaign', detail: campaignError?.message },
         { status: 500 }
       )
     }
@@ -97,7 +101,7 @@ export async function POST(request: NextRequest) {
 
     if (leadsError) {
       console.error('[POST /api/campaigns/confirm] Leads insert error:', leadsError)
-      // Attempt to clean up the campaign record
+      // Attempt rollback by cleaning up the inserted campaign record
       await supabase.from('campaigns').delete().eq('id', campaignRow.id)
       return NextResponse.json(
         { error: 'Failed to save leads', detail: leadsError.message },
@@ -105,7 +109,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // ── Return camelCase ──────────────────────────────────────────────────────
+    // ── Return camelCase matching TypeScript domain interfaces ────────────────
     const campaign = {
       id: campaignRow.id,
       companyName: campaignRow.company_name,
@@ -118,7 +122,7 @@ export async function POST(request: NextRequest) {
       updatedAt: campaignRow.updated_at,
     }
 
-    const leads = (leadsRows ?? []).map((row: Record<string, unknown>) => ({
+    const leads = (leadsRows ?? []).map((row: any) => ({
       id: row.id,
       campaignId: row.campaign_id,
       firstName: row.first_name,
@@ -134,8 +138,11 @@ export async function POST(request: NextRequest) {
     }))
 
     return NextResponse.json({ campaign, leads }, { status: 201 })
-  } catch (err) {
+  } catch (err: any) {
     console.error('[POST /api/campaigns/confirm] Unexpected error:', err)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json(
+      { error: err.message || 'Internal server error' },
+      { status: 500 }
+    )
   }
 }

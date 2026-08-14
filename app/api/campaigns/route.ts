@@ -53,7 +53,7 @@ export async function GET() {
 
     const { data: leads, error: leadsError } = await supabase
       .from('leads')
-      .select('campaignId, campaign_id, status')
+      .select('campaign_id, status')
 
     if (leadsError) {
       console.error('[GET /api/campaigns] Lead count error:', leadsError)
@@ -70,7 +70,7 @@ export async function GET() {
     }
 
     for (const lead of (leads ?? [])) {
-      const cId = lead.campaignId || lead.campaign_id
+      const cId = lead.campaign_id
       const entry = countMap[cId]
       if (!entry) continue
       entry.total++
